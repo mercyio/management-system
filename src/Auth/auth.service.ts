@@ -1,11 +1,11 @@
 import { BadRequestException, HttpException, Injectable, Req, Res, } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { SignupDto } from "src/dto/signup.dto";
-import { UserEntity } from "src/entities/userEntity";
+import { SignupDto } from "../dto/signup.dto";
+import { UserEntity } from "../entities/userEntity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from "src/dto/login.dto";
+import { LoginDto } from "../dto/login.dto";
 import {Request, Response}  from 'express';
 
 @Injectable()
