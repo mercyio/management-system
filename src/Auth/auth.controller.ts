@@ -1,8 +1,11 @@
-import { Body, Controller, HttpCode, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { SignupDto } from "../dto/signup.dto";
-import { LoginDto } from "../dto/login.dto";
+import { SignupDto } from "./dto/signup.dto";
+import { LoginDto } from "./dto/login.dto";
 import {Request, Response}  from 'express';
+import { AuthGuard } from "@nestjs/passport";
+import { RoleGuard } from "./guard/role.guard";
+import { Roles } from "./guard/role";
 
 @Controller('project')
 export class AuthController {
@@ -23,6 +26,13 @@ export class AuthController {
     @Post('logout')
     async logout (@Req()req:Request, @Res()res:Response){
       return await this.authService.logout(req, res)
+    }
+
+    @Get()
+    @UseGuards(AuthGuard(), RoleGuard)
+    @Roles('admin', 'vendor')
+    async findUser(){
+      return await this.authService.findUsers()
     }
 
 }

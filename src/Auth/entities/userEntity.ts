@@ -1,4 +1,4 @@
-import { UserRole } from "src/enum/role.enum";
+import { UserRole } from "src/Auth/enum/role.enum";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
