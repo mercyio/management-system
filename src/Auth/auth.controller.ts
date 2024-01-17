@@ -34,13 +34,13 @@ export class AuthController {
       return await this.authService.logout(req, res)
     }
 
-    @Get('users')
+    @Get('profile')
+    @ApiOkResponse()
     @ApiBearerAuth()
-    @ApiOkResponse({description: "User Login"})
     // @ApiBody({type : 'users'})
-    @ApiUnauthorizedResponse({description: "Invalid credentials"})
+    // @ApiUnauthorizedResponse({description: "Invalid credentials"})
     @UseGuards(AuthGuard(), RoleGuard)
-    @Roles('user', 'vendor')
+    @Roles('admin', 'vendor')
     async findUser(){
       return await this.authService.findUsers()
     }
