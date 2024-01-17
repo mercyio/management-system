@@ -32,7 +32,7 @@ async signup(payload: SignupDto){
         return user;
      } catch (err){
         if(err.code === '22P02'){
-        throw new BadRequestException('admin role should be lower case')
+        throw new BadRequestException('role should be in lower case')
         }
         return err
      }
@@ -116,5 +116,6 @@ async user(headers:any) :Promise<any>{
    else{
          throw new UnauthorizedException('invalid or missing bearer token')
       }
+
 }
 }
