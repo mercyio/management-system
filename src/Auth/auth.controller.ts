@@ -7,8 +7,9 @@ import { AuthGuard } from "@nestjs/passport";
 import { RoleGuard } from "./guard/role.guard";
 import { Roles } from "./guard/role";
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { BlockGuard } from "./guard/block.guard";
 
-@Controller('project')
+@Controller('users')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -34,15 +35,38 @@ export class AuthController {
       return await this.authService.logout(req, res)
     }
 
-    @Get('profile')
+    @Get('users')
     @ApiOkResponse()
     @ApiBearerAuth()
     // @ApiBody({type : 'users'})
     // @ApiUnauthorizedResponse({description: "Invalid credentials"})
     @UseGuards(AuthGuard(), RoleGuard)
     @Roles('admin', 'vendor')
-    async findUser(){
+    async findUsers(){
       return await this.authService.findUsers()
     }
 
+    @Get('profile')
+    @UseGuards(AuthGuard())
+    async(@Req() req:Request){
+      return req.user
+    }
+
+    @Post('block/:userid')
+    @Roles('admin', 'vendor')
+    async blockuser(userid:number){
+      return await this.authService.blockUser(userid)
+    }
+    
+    @HttpCode(200)
+    @Post('unblock/:userid')
+    @Roles('admin', 'vendor')
+    async unblockuser(userid: number){
+      return await this.authService.unblock(userid)
+    }
+
+    @Get(':userid')
+    async user(userid:number){
+      return await this.authService.finduser(userid)
+    }
 }

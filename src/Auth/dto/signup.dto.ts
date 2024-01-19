@@ -4,7 +4,6 @@ import { UserRole } from "src/Auth/enum/role.enum"
 
 
 export class SignupDto {
-
     @IsNotEmpty()
     @IsString()
     @MinLength(5)

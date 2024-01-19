@@ -54,7 +54,8 @@ async signin(payload:LoginDto, @Req()req:Request, @Res()res:Response){
    }
    const token = await this.jwtService.signAsync({
       email: user.email,
-      userid: user.userid
+      userid: user.userid,
+      role: user.role
    });
    res.cookie('isAuthenticated', token,{
       httpOnly: true,
@@ -86,10 +87,7 @@ async findEmail(email:string){
 }
 
 
-async findUsers(){
-  const users = await this.userRepo.find()
-  return users;
-}
+
 
 async user(headers:any) :Promise<any>{
    const authorizationHeader = headers.authorization;
@@ -118,4 +116,46 @@ async user(headers:any) :Promise<any>{
       }
 
 }
+
+async findUsers(){
+   const users = await this.userRepo.find()
+   return users;
+ }
+
+  async blockUser( userid:number){
+   try{
+   const user =await this.userRepo.findOne({where:{userid}})
+      if(!user){
+         throw new UnauthorizedException('incorrect credentials')
+      }
+      user.blocked = true
+      const blockuser = this.userRepo.save(user)
+       return blockuser;
+   }
+   catch(error){
+      throw new UnauthorizedException('unable to block this user')
+   }
+   
+}
+
+async unblock(userid:number){
+   try{
+   const findone =await this.userRepo.findOne({where:{userid}})
+      if(!findone){
+         throw new UnauthorizedException('invalid credentials')
+      }
+      findone.blocked = false
+      const unblock =this.userRepo.save(findone)
+      return unblock
+   }
+  catch(error){
+   throw new UnauthorizedException('unable to unblock this user')
+  }
+}
+
+async finduser (userid:number){
+   const finduser = await this.userRepo.findOneBy({userid})
+   return finduser;
+}
+
 }

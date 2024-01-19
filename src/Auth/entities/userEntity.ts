@@ -3,8 +3,8 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 
 @Entity()
 export class UserEntity{
-   @PrimaryGeneratedColumn('uuid')
-    userid : string;
+   @PrimaryGeneratedColumn()
+    userid : number;
 
     @Column()
     firstname : string;
@@ -28,10 +28,14 @@ export class UserEntity{
     })
     role: UserRole;
 
+    @Column({
+      default: false
+    })
+    blocked: boolean
+
    @CreateDateColumn()
    created_At: Date
 
    @UpdateDateColumn()
    update_At : Date
-
 }
