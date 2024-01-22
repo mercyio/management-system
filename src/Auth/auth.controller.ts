@@ -56,7 +56,7 @@ export class AuthController {
     @UseGuards(BlockGuard)
     // @Roles('admin', 'unknown')
     @Post('block/:userid')
-    async blockuser(@Param('userid') userid:number){
+    async blockuser(@Param('userid') userid:string){
       return await this.authService.blockUser(userid)
     }
     
@@ -64,24 +64,24 @@ export class AuthController {
     @UseGuards(BlockGuard)
     // @Roles('admin', 'unknown')
     @Post('unblock/:userid')
-    async unblockuser(@Param('userid') userid: number){
+    async unblockuser(@Param('userid') userid: string){
       return await this.authService.unblock(userid)
     }
     
     @UseGuards(AuthGuard(),BlockGuard)
     @Get('user/:userid')
-    async user(@Param('userid') userid:number){
+    async user(@Param('userid') userid:string){
       return await this.authService.finduser(userid)
     }
 
-    @Post('forgot-password/:email')
+    @Post('forgot-password')
     async requestPasswordReset(@Param('email') email: string , @Req() req:Request, @Res() res:Response): Promise<{ message: any }> {
       const result = await this.authService.forgotPassword(email, res);
       return { message: result};
     }
   
     @Post('reset-password/:id/:token')
-    async resetPassword(@Param() params:['userid', 'email'], @Req() req:Request, @Res() res:Response, payload: ResetPasswordto): Promise<{ message: any }> {
+    async resetPassword(@Param() params:['userid', 'email'], @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto): Promise<{ message: any }> {
       const result = await this.authService.resetpassword( payload, req, res);
       return { message: result };
     }

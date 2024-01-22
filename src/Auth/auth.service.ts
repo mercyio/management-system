@@ -127,7 +127,7 @@ async findUsers(){
 
 
 
-  async blockUser( userid:number){
+  async blockUser( userid:string){
    try{
    const user =await this.userRepo.findOne({where:{userid}})
       if(!user){
@@ -145,7 +145,7 @@ async findUsers(){
 
 
 
-async unblock(userid:number){
+async unblock(userid:string){
    try{
    const user =await this.userRepo.findOne({where:{userid}})
       if(!user){
@@ -162,7 +162,7 @@ async unblock(userid:number){
 
 
 
-async finduser (userid:number){
+async finduser (userid:string){
    const user = await this.userRepo.findOneBy({userid})
    if(!user){
      throw new UnauthorizedException('user not found')
@@ -199,12 +199,13 @@ async forgotPassword(email:string, @Res() res:Response): Promise<any>{
 
 
   async resetpassword (@Param() payload:ResetPasswordto, @Req() req:Request, @Res() res:Response): Promise<any>{
-    const { userid, email} = req.params
+    const {userid, email} = req.params
     const user = await this.userRepo.findOneBy({userid})
+
     if(!user){
      throw new NotFoundException('user not found')
     }
-  
+
     const verify = this.jwtService.verify(email)
     const verifyUserid = verify['userid']
     if(userid !== verifyUserid){
@@ -217,9 +218,9 @@ async forgotPassword(email:string, @Res() res:Response): Promise<any>{
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const userdetail = await this.userRepo.save({password:hashedPassword})
-   
-
+  
    res.send(
+      
       userdetail
       )
 
