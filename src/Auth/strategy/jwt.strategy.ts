@@ -21,13 +21,16 @@ export class JwtStrategy extends PassportStrategy(Strategy){
             const user = await this.authService.findEmail(email)
     
             if(!user){
-                throw new UnauthorizedException();
+                throw new UnauthorizedException('user not found');
             }
             return user;
         } catch(error){
             console.error('Error validating token :', error )
-             throw new UnauthorizedException('INVALID TOKEN')
+             throw new UnauthorizedException('INVALID TOKEN input')
         }
        
     }
+    // async validate(payload: any) {
+    //     return { userid: payload.sub, firstname : payload.firstname };
+    //   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable, Req, Res, UnauthorizedException, } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable, NotFoundException, Param, Req, Res, UnauthorizedException, } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SignupDto } from "./dto/signup.dto";
@@ -7,6 +7,7 @@ import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
 import {Request, Response}  from 'express';
+import { ResetPasswordto } from "./dto/resetpassword.dto";
 
 @Injectable()
 export class AuthService {
@@ -88,7 +89,6 @@ async findEmail(email:string){
 
 
 
-
 async user(headers:any) :Promise<any>{
    const authorizationHeader = headers.authorization;
 
@@ -117,10 +117,15 @@ async user(headers:any) :Promise<any>{
 
 }
 
+
+
 async findUsers(){
    const users = await this.userRepo.find()
    return users;
  }
+
+
+
 
   async blockUser( userid:number){
    try{
@@ -138,14 +143,16 @@ async findUsers(){
    
 }
 
+
+
 async unblock(userid:number){
    try{
-   const findone =await this.userRepo.findOne({where:{userid}})
-      if(!findone){
+   const user =await this.userRepo.findOne({where:{userid}})
+      if(!user){
          throw new UnauthorizedException('invalid credentials')
       }
-      findone.blocked = false
-      const unblock =this.userRepo.save(findone)
+      user.blocked = false
+      const unblock =this.userRepo.save(user)
       return unblock
    }
   catch(error){
@@ -153,9 +160,72 @@ async unblock(userid:number){
   }
 }
 
+
+
 async finduser (userid:number){
-   const finduser = await this.userRepo.findOneBy({userid})
-   return finduser;
+   const user = await this.userRepo.findOneBy({userid})
+   if(!user){
+     throw new UnauthorizedException('user not found')
+   }
+   return user;
 }
 
+
+async forgotPassword(email:string, @Res() res:Response): Promise<any>{
+//    request = req.user;
+//   email =  requestUser{email}
+
+   const user = await this.userRepo.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const userid = user.userid
+    const token = await this.jwtService.signAsync({
+      email: user.email,
+      userid: user.userid,
+      role: user.role
+    })
+   
+    const expirationDate = new Date();
+    expirationDate.setMinutes(expirationDate.getMinutes() + 3); 
+    const link = `http://localhost:7000/api/v1/users/${userid}/${token}`
+    console.log(link)
+   //   return link
+   res.send('A link has been sent to you')
+    
+  }
+
+
+
+  async resetpassword (@Param() payload:ResetPasswordto, @Req() req:Request, @Res() res:Response): Promise<any>{
+    const { userid, email} = req.params
+    const user = await this.userRepo.findOneBy({userid})
+    if(!user){
+     throw new NotFoundException('user not found')
+    }
+  
+    const verify = this.jwtService.verify(email)
+    const verifyUserid = verify['userid']
+    if(userid !== verifyUserid){
+     throw new NotFoundException('incorrect id')
+    } 
+
+    const{newPassword, confirmPassword} = payload
+    if(newPassword !== confirmPassword){
+     throw new NotFoundException('password must be the same')
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const userdetail = await this.userRepo.save({password:hashedPassword})
+   
+
+   res.send(
+      userdetail
+      )
+
+
+
+
+
+  }
 }
