@@ -8,6 +8,8 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
 import {Request, Response}  from 'express';
 import { ResetPasswordto } from "./dto/resetpassword.dto";
+import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
+import { log } from "console";
 
 @Injectable()
 export class AuthService {
@@ -171,16 +173,20 @@ async finduser (userid:string){
 }
 
 
-async forgotPassword(email:string, @Res() res:Response): Promise<any>{
-//    request = req.user;
-//   email =  requestUser{email}
+async forgotPassword( @Res() res:Response, @Req() req:Request, payload:ForgotPasswordDto){
+
+   const {email} = payload
 
    const user = await this.userRepo.findOne({ where: { email } });
+   console.log(user);
+   
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
     const userid = user.userid
+   // console.log(userid);
+   
     const token = await this.jwtService.signAsync({
       email: user.email,
       userid: user.userid,
@@ -188,8 +194,8 @@ async forgotPassword(email:string, @Res() res:Response): Promise<any>{
     })
    
     const expirationDate = new Date();
-    expirationDate.setMinutes(expirationDate.getMinutes() + 3); 
-    const link = `http://localhost:7000/api/v1/users/${userid}/${token}`
+    expirationDate.setMinutes(expirationDate.getMinutes() + 1); 
+    const link = `http://localhost:7000/api/v1/users/reset-password/${userid}/${token}`
     console.log(link)
    //   return link
    res.send('A link has been sent to you')
@@ -198,17 +204,22 @@ async forgotPassword(email:string, @Res() res:Response): Promise<any>{
 
 
 
-  async resetpassword (@Param() payload:ResetPasswordto, @Req() req:Request, @Res() res:Response): Promise<any>{
-    const {userid, email} = req.params
-    const user = await this.userRepo.findOneBy({userid})
+  async resetpassword ( payload:ResetPasswordto, @Req() req:Request, @Res() res:Response){
+    const {id,token} = req.params
+    console.log(req.params);
+    
+    const user = await this.userRepo.findOne({where:{userid:id}})
+// console.log(user);
 
     if(!user){
      throw new NotFoundException('user not found')
     }
 
-    const verify = this.jwtService.verify(email)
-    const verifyUserid = verify['userid']
-    if(userid !== verifyUserid){
+    const verify = this.jwtService.verify(token)
+    let verifyUserid = verify['userid']
+    console.log(verifyUserid);
+    
+    if(id != verifyUserid){
      throw new NotFoundException('incorrect id')
     } 
 
@@ -216,17 +227,28 @@ async forgotPassword(email:string, @Res() res:Response): Promise<any>{
     if(newPassword !== confirmPassword){
      throw new NotFoundException('password must be the same')
     }
+    console.log(newPassword);
+    
+    user.password = newPassword 
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const userdetail = await this.userRepo.save({password:hashedPassword})
+    user.password = hashedPassword
+    const userdetail = await this.userRepo.save(user) 
   
-   res.send(
-      
-      userdetail
-      )
+   res.send(userdetail)
+
+  }
 
 
-
-
-
+  googleLogin(@Req() req:Request){
+   if(!req.user){
+      return 'NO user from google'
+   }
+   console.log(req.user);
+   
+   return{
+      message: 'user info from google',
+      user: req.user
+   }
   }
 }

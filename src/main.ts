@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe(
@@ -36,3 +38,4 @@ async function bootstrap() {
   await app.listen(Port, ()=> console.log(`listening on port:${Port}`));
 }
 bootstrap();
+

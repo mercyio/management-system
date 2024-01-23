@@ -9,6 +9,8 @@ import { Roles } from "./guard/role";
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
 import { BlockGuard } from "./guard/block.guard";
 import { ResetPasswordto } from "./dto/resetpassword.dto";
+import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
+// import { GoogleAuthGuard } from "./guard/google.guard";
 
 @Controller('users')
 export class AuthController {
@@ -75,16 +77,27 @@ export class AuthController {
     }
 
     @Post('forgot-password')
-    async requestPasswordReset(@Param('email') email: string , @Req() req:Request, @Res() res:Response): Promise<{ message: any }> {
-      const result = await this.authService.forgotPassword(email, res);
-      return { message: result};
+    async requestPasswordReset( @Req() req:Request, @Res() res:Response,@Body() payload:ForgotPasswordDto) {
+      return await this.authService.forgotPassword( res,req, payload);
+      // return { message: result};
     }
   
     @Post('reset-password/:id/:token')
-    async resetPassword(@Param() params:['userid', 'email'], @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto): Promise<{ message: any }> {
-      const result = await this.authService.resetpassword( payload, req, res);
-      return { message: result };
+    async resetPassword(@Param() params:['userid','token'], @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto) {
+      return await this.authService.resetpassword( payload, req, res);
+      // return {  result };
     }
-  
+
+    @Get()
+    // @UseGuards(AuthGuard())
+     googleAuth(@Req() req:Request){}
+
+    @Get('auth/google/redirect')
+    // @UseGuards(AuthGuard())
+     googleAuthRedirect(@Req() req:Request){
+    return this.authService.googleLogin(req)
+    }
+     
+   
 }
 
