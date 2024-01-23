@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './Auth/entities/userEntity';
 import { AuthModule } from './Auth/auth.module';
 import { DatabaseModule } from './database/database.module';
+import { GoogleStrategy } from './Auth/strategy/google.strategy';
 
 @Module({
   imports: [

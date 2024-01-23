@@ -240,11 +240,11 @@ async forgotPassword( @Res() res:Response, @Req() req:Request, payload:ForgotPas
   }
 
 
-  googleLogin(@Req() req:Request){
+  googleLogin( req){
    if(!req.user){
+   console.log(req.user);
       return 'NO user from google'
    }
-   console.log(req.user);
    
    return{
       message: 'user info from google',

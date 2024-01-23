@@ -1,25 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Console, log } from 'console';
-import * as dotenv from 'dotenv';
-import { Strategy, VerifyCallback } from 'passport-oauth2';
+// import { Injectable } from '@nestjs/common';
+// import { PassportStrategy } from '@nestjs/passport';
+// // import * as dotenv from 'dotenv';
+// import { Strategy, VerifyCallback } from 'passport-oauth2';
+
+import { Injectable } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { Strategy, VerifyCallback } from "passport-google-oauth20";
 
 
-dotenv.config()
 
-
-
-
+// dotenv.config()
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     super({ 
-      authorizationURL: 'http://localhost:7000/auth/google/authorize',
-      tokenURL: 'http://localhost:7000/auth/google/token',
-      clientID: '924289317907-ppmv26t7g2sj9hhok1orrbj02j2bdnav.apps.googleusercontent.com',
-      clientSecret: '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',
-      callbackURL: 'http://localhost:7000/api/v1/users/auth/google/redirect',
+    
+      clientID: '924289317907-dsr8itlsfth640rcn85gcr4tsakiqrb4.apps.googleusercontent.com',
+      clientSecret: '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',
+      callbackURL: 'http://localhost:7000/auth/google/redirect',
       scope: ['email', 'profile']
     });
   }
@@ -36,7 +35,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     refreshToken: string,
     profile: any,
     done: VerifyCallback,
-  ) {
+  ):Promise<any> {
     console.log(accessToken);
     console.log(profile);
     console.log(refreshToken);

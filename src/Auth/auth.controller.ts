@@ -12,7 +12,7 @@ import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
 // import { GoogleAuthGuard } from "./guard/google.guard";
 
-@Controller('users')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -89,15 +89,21 @@ export class AuthController {
     }
 
     @Get()
-    // @UseGuards(AuthGuard())
-     googleAuth(@Req() req:Request){}
+    @UseGuards(AuthGuard('google'))
+     googleAuth(@Req() req){}
 
     @Get('auth/google/redirect')
-    // @UseGuards(AuthGuard())
-     googleAuthRedirect(@Req() req:Request){
+    @UseGuards(AuthGuard('google'))
+     googleAuthRedirect(@Req() req){
     return this.authService.googleLogin(req)
     }
      
+    // @Get('auth/google/redirect')
+    // // @UseGuards(AuthGuard())
+    // async googleAuthRedirect(@Req() req:Request, @Res() res:Response){
+    // const jwt = await this.authService.googleLogin(req)
+    // res.set('authorization', jwt.access_token)
+    // }
    
 }
 
