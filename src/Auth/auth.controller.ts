@@ -10,7 +10,7 @@ import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiUnauthori
 import { BlockGuard } from "./guard/block.guard";
 import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
-// import { GoogleAuthGuard } from "./guard/google.guard";
+
 
 @Controller()
 export class AuthController {
@@ -41,8 +41,6 @@ export class AuthController {
     @Get('users')
     @ApiOkResponse()
     @ApiBearerAuth()
-    // @ApiBody({type : 'users'})
-    // @ApiUnauthorizedResponse({description: "Invalid credentials"})
     @UseGuards(AuthGuard(), RoleGuard)
     @Roles('admin', 'vendor')
     async findUsers(){
@@ -56,7 +54,7 @@ export class AuthController {
     }
     
     @UseGuards(BlockGuard)
-    // @Roles('admin', 'unknown')
+    @Roles('admin', 'vendors')
     @Post('block/:userid')
     async blockuser(@Param('userid') userid:string){
       return await this.authService.blockUser(userid)
@@ -64,7 +62,7 @@ export class AuthController {
     
     @HttpCode(200)
     @UseGuards(BlockGuard)
-    // @Roles('admin', 'unknown')
+    @Roles('admin', 'vendors')
     @Post('unblock/:userid')
     async unblockuser(@Param('userid') userid: string){
       return await this.authService.unblock(userid)
@@ -79,13 +77,11 @@ export class AuthController {
     @Post('forgot-password')
     async requestPasswordReset( @Req() req:Request, @Res() res:Response,@Body() payload:ForgotPasswordDto) {
       return await this.authService.forgotPassword( res,req, payload);
-      // return { message: result};
     }
   
     @Post('reset-password/:id/:token')
     async resetPassword(@Param() params:['userid','token'], @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto) {
       return await this.authService.resetpassword( payload, req, res);
-      // return {  result };
     }
 
     @Get()
@@ -96,14 +92,6 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
      googleAuthRedirect(@Req() req){
     return this.authService.googleLogin(req)
-    }
-     
-    // @Get('auth/google/redirect')
-    // // @UseGuards(AuthGuard())
-    // async googleAuthRedirect(@Req() req:Request, @Res() res:Response){
-    // const jwt = await this.authService.googleLogin(req)
-    // res.set('authorization', jwt.access_token)
-    // }
-   
+    } 
 }
 

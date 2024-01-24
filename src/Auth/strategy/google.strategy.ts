@@ -1,17 +1,6 @@
-// import { Injectable } from '@nestjs/common';
-// import { PassportStrategy } from '@nestjs/passport';
-// // import * as dotenv from 'dotenv';
-// import { Strategy, VerifyCallback } from 'passport-oauth2';
-
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, VerifyCallback } from "passport-google-oauth20";
-
-
-
-// dotenv.config()
-
-
 
 
 
@@ -26,13 +15,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile'],
     });
   }
-
-  // authorizationParams(): { [key: string]: string } {
-  //   return {
-  //     access_type: 'offline',
-  //     prompt: 'consent',
-  //   };
-  // }
 
   async validate(
     accessToken: string,
