@@ -33,6 +33,9 @@ export class UserEntity{
     })
     blocked: boolean
 
+   //  @Column({ name: "is_active", default: false })
+   //  isActive: boolean;
+
    @CreateDateColumn()
    created_At: Date
 

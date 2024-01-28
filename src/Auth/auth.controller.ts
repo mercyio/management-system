@@ -73,15 +73,17 @@ export class AuthController {
     async user(@Param('userid') userid:string){
       return await this.authService.finduser(userid)
     }
-
+    
+    @Roles('user')
     @Post('forgot-password')
     async requestPasswordReset( @Req() req:Request, @Res() res:Response,@Body() payload:ForgotPasswordDto) {
-      return await this.authService.forgotPassword( res,req, payload);
+      return await this.authService.forgotPassword( payload);
     }
-  
-    @Post('reset-password/:id/:token')
-    async resetPassword(@Param() params:['userid','token'], @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto) {
-      return await this.authService.resetpassword( payload, req, res);
+    
+    @Roles('user')
+    @Post('reset-password/:userid')
+    async resetPassword(@Param('userid') userid:string, @Req() req:Request, @Res() res:Response, @Body() payload: ResetPasswordto) {
+      return await this.authService.resetpassword(userid, payload);
     }
 
     @Get()

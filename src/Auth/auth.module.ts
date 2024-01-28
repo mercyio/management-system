@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { RoleGuard } from './guard/role.guard';
 import { BlockGuard } from './guard/block.guard';
 import { GoogleStrategy } from './strategy/google.strategy';
+import { EmailService } from './email/email.service';
 
 @Module({
     imports: [
@@ -33,7 +34,7 @@ import { GoogleStrategy } from './strategy/google.strategy';
 
       ],
       controllers: [AuthController],
-      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy],
+      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, EmailService],
       exports: [AuthService, JwtStrategy, PassportModule],
     })
 export class AuthModule {}

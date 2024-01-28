@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException, Param, Req, Res, UnauthorizedException, } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, Param, Req, Res, UnauthorizedException, } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SignupDto } from "./dto/signup.dto";
@@ -9,14 +9,19 @@ import { LoginDto } from "./dto/login.dto";
 import {Request, Response}  from 'express';
 import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
-import { log } from "console";
+import { ConfigService } from "@nestjs/config";
+import * as nodemailer from 'nodemailer';
+import { EmailService } from "./email/email.service";
+// import {default as config} from '../config';
 
 @Injectable()
 export class AuthService {
 
   constructor ( 
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
-    private jwtService :JwtService){}
+    private jwtService :JwtService,
+    private emailService :EmailService,
+    private configService :ConfigService){}
 
 
 async signup(payload: SignupDto){
@@ -84,7 +89,7 @@ async logout (@Req()req:Request, @Res()res:Response){
 async findEmail(email:string){
    const mail = await this.userRepo.findOneByOrFail({email})
    if(!mail){
-      throw new UnauthorizedException
+      throw new UnauthorizedException('email not found')
    }
    return mail;
 }
@@ -172,72 +177,168 @@ async finduser (userid:string){
    return user;
 }
 
-
-async forgotPassword( @Res() res:Response, @Req() req:Request, payload:ForgotPasswordDto){
+ async forgotPassword(payload:ForgotPasswordDto):Promise<any>{
 
    const {email} = payload
-
-   const user = await this.userRepo.findOne({ where: { email } });
-   console.log(user);
+   if (!email) {
+     throw new BadRequestException("Email is required");
+   }
+   const user = await this.findEmail(email);
+   if (!user) {
+     throw new NotFoundException("User not found");
+   }
    
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const userid = user.userid
-   // console.log(userid);
-   
-    const token = await this.jwtService.signAsync({
-      email: user.email,
-      userid: user.userid,
-      role: user.role
-    })
-   
+   const randomstring = Math.random().toString(36).slice(-8);
+   await this.emailService.sendGeneratedPassword(
+      email,
+      randomstring,
+      user.firstname
+    );
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + 1); 
-    const link = `http://localhost:7000/api/v1/users/reset-password/${userid}/${token}`
-    console.log(link)
-   //   return link
-   res.send('A link has been sent to you')
+   const hashedPassword = await bcrypt.hash( randomstring, 10);
+   await this.userRepo.save({
+     ...user,
+     password: hashedPassword,
+
+   }); 
+   console.log(randomstring);
+   return `password has been sent to ${email}`
+   
+ }
+
+
+ async resetpassword(userid: string,payload: ResetPasswordto): Promise<void> {
+  const user = await this.userRepo.findOne({where:{userid}})
+
+
+   const pwMatch = await bcrypt.compare(
+     payload.newPassword,
+     user.password
+   );
+
+   if (!pwMatch) {
+     throw new Error("Incorrect password");
+   }
+
+   user.password = await bcrypt.hash(payload.newPassword, 10);
+   await this.userRepo.save(user);
+ }
+
+
+
+//  async sendEmailForgotPassword(email: string): Promise<boolean> {
+//    var userFromDb = await this.userRepo.findOne({where:{email}});
+//    if(!userFromDb){ 
+//       throw new HttpException('LOGIN.USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+//  }
+//    var tokenModel = await this.forgotPassword({email});
+
+//    if(tokenModel && tokenModel.message){
+//        let transporter = nodemailer.createTransport({
+//            host: config.mail.host,
+//            port: config.mail.port,
+//            secure: config.mail.secure, // true for 465, false for other ports
+//            auth: {
+//                user: config.mail.user,
+//                pass: config.mail.pass
+//            }
+//        });
+   
+//        let mailOptions = {
+//          from: '"Company" <' + config.mail.user + '>', 
+//          to: email, // list of receivers (separated by ,)
+//          subject: 'Frogotten Password', 
+//          text: 'Forgot Password',
+//          html: 'Hi! <br><br> If you requested to reset your password<br><br>'+
+//          '<a href='+ config.host.url + ':' + config.host.port +'/auth/email/reset-password/'+ tokenModel.message + '>Click here</a>'  // html body
+//        };
+   
+//        var sent = await new Promise<boolean>(async function(resolve, reject) {
+//          return await transporter.sendMail(mailOptions, async (error, info) => {
+//              if (error) {      
+//                console.log('Message sent: %s', error);
+//                return reject(false);
+//              }
+//              console.log('Message sent: %s', info.messageId);
+//              resolve(true);
+//          });      
+//        })
+
+//        return sent;
+//    } else {
+//      throw new HttpException('REGISTER.USER_NOT_REGISTERED', HttpStatus.FORBIDDEN);
+//    }
+//  }
+
+
+
+
+// async forgotPassword( @Res() res:Response, @Req() req:Request, payload:ForgotPasswordDto){
+
+//    const {email} = payload
+
+//    const user = await this.userRepo.findOne({ where: { email } });
+//    console.log(user);
+   
+
+//     if (!user) {
+//       throw new NotFoundException('email not found');
+//     }
+//     const userid = user.userid
+//    // console.log(userid);
+   
+//     const token = await this.jwtService.signAsync({
+//       email: user.email,
+//       userid: user.userid,
+//       role: user.role
+//     })
+   
+//     const expirationDate = new Date();
+//     expirationDate.setMinutes(expirationDate.getMinutes() + 1); 
+//     const link = `http://localhost:7000/api/v1/users/reset-password/${userid}/${token}`
+//     console.log(link)
+//    //   return link
+//    res.send('A link has been sent to you')
     
-  }
+//   }
 
 
 
-  async resetpassword ( payload:ResetPasswordto, @Req() req:Request, @Res() res:Response){
-    const {id,token} = req.params
-    console.log(req.params);
+//   async resetpassword ( payload:ResetPasswordto, @Req() req:Request, @Res() res:Response){
+//     const {id,token} = req.params
+//     console.log(req.params);
     
-    const user = await this.userRepo.findOne({where:{userid:id}})
-// console.log(user);
+//     const user = await this.userRepo.findOne({where:{userid:id}})
+// // console.log(user);
 
-    if(!user){
-     throw new NotFoundException('user not found')
-    }
+//     if(!user){
+//      throw new NotFoundException('user not found')
+//     }
 
-    const verify = this.jwtService.verify(token)
-    let verifyUserid = verify['userid']
-    console.log(verifyUserid);
+//     const verify = this.jwtService.verify(token)
+//     let verifyUserid = verify['userid']
+//     console.log(verifyUserid);
     
-    if(id != verifyUserid){
-     throw new NotFoundException('incorrect id')
-    } 
+//     if(id != verifyUserid){
+//      throw new NotFoundException('incorrect id')
+//     } 
 
-    const{newPassword, confirmPassword} = payload
-    if(newPassword !== confirmPassword){
-     throw new NotFoundException('password must be the same')
-    }
-    console.log(newPassword);
+//     const{newPassword, confirmPassword} = payload
+//     if(newPassword !== confirmPassword){
+//      throw new NotFoundException('password must be the same')
+//     }
+//     console.log(newPassword);
     
-    user.password = newPassword 
+//     user.password = newPassword 
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword
-    const userdetail = await this.userRepo.save(user) 
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+//     user.password = hashedPassword
+//     const userdetail = await this.userRepo.save(user) 
   
-   res.send(userdetail)
+//    res.send(userdetail)
 
-  }
+//   }
 
 
   googleLogin( req){
