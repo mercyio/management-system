@@ -5,7 +5,7 @@ import { UserEntity } from './Auth/entities/userEntity';
 import { AuthModule } from './Auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { GoogleStrategy } from './Auth/strategy/google.strategy';
-import { EmailModule } from './Auth/email/email.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -14,7 +14,19 @@ import { EmailModule } from './Auth/email/email.module';
     }),
     AuthModule,
     DatabaseModule,
-    EmailModule
-  ],
+    MailerModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+              transport: {
+                service: 'gmail',
+                auth: {
+                  user: configService.getOrThrow("EMAIL_USER"),
+                  pass: configService.getOrThrow("EMAIL_SECRET"),
+                },
+              },
+            }),
+            inject: [ConfigService],
+      }),
+   ],
 })
 export class AppModule {}

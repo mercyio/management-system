@@ -10,7 +10,6 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { RoleGuard } from './guard/role.guard';
 import { BlockGuard } from './guard/block.guard';
 import { GoogleStrategy } from './strategy/google.strategy';
-import { EmailService } from './email/email.service';
 
 @Module({
     imports: [
@@ -20,7 +19,7 @@ import { EmailService } from './email/email.service';
             useFactory: async (configService: ConfigService) =>
             ({
                 secret: configService.getOrThrow<string>
-                ('JWT_SECRET'),
+                ('JWT_SECRET'), 
                 signOptions:{
                     algorithm: configService.getOrThrow
                     ('JWT_ALGORITHM')
@@ -31,10 +30,9 @@ import { EmailService } from './email/email.service';
         PassportModule.register({
             defaultStrategy: 'jwt'
         }),
-
       ],
       controllers: [AuthController],
-      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, EmailService],
+      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, ],
       exports: [AuthService, JwtStrategy, PassportModule],
     })
 export class AuthModule {}

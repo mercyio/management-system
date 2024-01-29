@@ -11,7 +11,8 @@ import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
 import { ConfigService } from "@nestjs/config";
 import * as nodemailer from 'nodemailer';
-import { EmailService } from "./email/email.service";
+import { log } from "console";
+import { MailerService } from "@nestjs-modules/mailer";
 // import {default as config} from '../config';
 
 @Injectable()
@@ -20,8 +21,9 @@ export class AuthService {
   constructor ( 
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
     private jwtService :JwtService,
-    private emailService :EmailService,
-    private configService :ConfigService){}
+   
+    private configService :ConfigService,
+    private mailerService :MailerService){}
 
 
 async signup(payload: SignupDto){
@@ -177,7 +179,7 @@ async finduser (userid:string){
    return user;
 }
 
- async forgotPassword(payload:ForgotPasswordDto):Promise<any>{
+ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Response){
 
    const {email} = payload
    if (!email) {
@@ -188,41 +190,80 @@ async finduser (userid:string){
      throw new NotFoundException("User not found");
    }
    
-   const randomstring = Math.random().toString(36).slice(-8);
-   await this.emailService.sendGeneratedPassword(
-      email,
-      randomstring,
-      user.firstname
-    );
+   const OTP = Math.random().toString(36).slice(-8);
+   // await this.emailService.sendGeneratedPassword(email, randomstring, user.firstname);
+   
+   console.log(OTP);
+   
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + 1); 
-   const hashedPassword = await bcrypt.hash( randomstring, 10);
+   const hashedPassword = await bcrypt.hash( OTP, 10);
+   
    await this.userRepo.save({
      ...user,
      password: hashedPassword,
-
    }); 
-   console.log(randomstring);
-   return `password has been sent to ${email}`
-   
+ 
+   try{
+      await this.mailerService.sendMail({
+        from: 'mercydanke10@gmail.com',
+        to:`${user.email}`,
+        subject: "Password reset",
+        html: `<b>Rest Password OTP ${OTP}</b>`,
+        text: 'here is your new password'
+  
+      });
+   return res.send({
+      message: `An OTP has been sent to ${user.email}`
+   })
+
+    }
+  catch(error){
+    return error
+  }
+
+    
  }
 
 
- async resetpassword(userid: string,payload: ResetPasswordto): Promise<void> {
+
+ async resetpassword(userid: string, payload: ResetPasswordto, @Res() res:Response,) {
+
+   try{
   const user = await this.userRepo.findOne({where:{userid}})
 
-
-   const pwMatch = await bcrypt.compare(
-     payload.newPassword,
-     user.password
-   );
-
-   if (!pwMatch) {
-     throw new Error("Incorrect password");
+   
+      const pwMatch = await bcrypt.compare(
+         payload.currentPassword,
+         user.password
+       );
+       
+       
+       if (!pwMatch) {
+         throw new HttpException("Incorrect password",HttpStatus.BAD_REQUEST);
+       }
+    
+       const {newPassword, confirmPassword} = payload
+        if(newPassword !== confirmPassword){
+         throw new HttpException('password must be the same',HttpStatus.BAD_REQUEST)
+        }
+        console.log(newPassword);
+       user.password = newPassword
+       const hashedPassword = await bcrypt.hash(newPassword, 10);
+       user.password = hashedPassword
+       const userdetail= await this.userRepo.save(user);
+       
+      return res.send({
+       userdetail
+      })
    }
-
-   user.password = await bcrypt.hash(payload.newPassword, 10);
-   await this.userRepo.save(user);
+   catch(error){
+      
+     return res.send(error)
+   }
+   
+   
+  
  }
 
 
