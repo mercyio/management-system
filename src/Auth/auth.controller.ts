@@ -82,8 +82,8 @@ export class AuthController {
     
     @Roles('user')
     @Post('reset-password')
-    async resetPassword(userid:string,  @Body() payload: ResetPasswordto, @Res() res:Response,) {
-      return await this.authService.resetpassword(userid, payload,res);
+    async resetPassword(@Param('userid') userid:string,  @Body() payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
+      return await this.authService.resetpassword(userid, payload,res, req);
     }
 
     @Get()

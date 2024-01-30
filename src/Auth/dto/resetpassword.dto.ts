@@ -6,7 +6,7 @@ export class ResetPasswordto {
     @IsNotEmpty()
     @Length(5-12)
     @ApiProperty({type: String})
-    currentPassword: string;
+    OTP: string;
 
 
     @IsNotEmpty()

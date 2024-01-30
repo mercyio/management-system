@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, Param, Req, Res, UnauthorizedException, } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, NotFoundException, Param, Req, Res, UnauthorizedException, } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SignupDto } from "./dto/signup.dto";
@@ -11,7 +11,7 @@ import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
 import { ConfigService } from "@nestjs/config";
 import * as nodemailer from 'nodemailer';
-import { log } from "console";
+import { error, log } from "console";
 import { MailerService } from "@nestjs-modules/mailer";
 // import {default as config} from '../config';
 
@@ -179,7 +179,7 @@ async finduser (userid:string){
    return user;
 }
 
- async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Response){
+async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Response){
 
    const {email} = payload
    if (!email) {
@@ -190,9 +190,8 @@ async finduser (userid:string){
      throw new NotFoundException("User not found");
    }
    
-   const OTP = Math.random().toString(36).slice(-8);
-   // await this.emailService.sendGeneratedPassword(email, randomstring, user.firstname);
-   
+   // const OTP = Math.random().toString(36).slice(-8);
+   const OTP = Math.floor(10000000 + Math.random() * 90000000).toString().slice(0, 8);
    console.log(OTP);
    
     const expirationDate = new Date();
@@ -203,20 +202,25 @@ async finduser (userid:string){
      ...user,
      password: hashedPassword,
    }); 
+
+   // console.log(user.password);
+   // console.log(user);
+   
+   
  
    try{
       await this.mailerService.sendMail({
         from: 'mercydanke10@gmail.com',
         to:`${user.email}`,
-        subject: "Password reset",
-        html: `<b>Rest Password OTP ${OTP}</b>`,
+        subject: "Management system",
+        html: `<b>hey ${user.lastname} this is your reset Password OTP ${OTP}. Do not disclose</b>`,
         text: 'here is your new password'
   
       });
    return res.send({
       message: `An OTP has been sent to ${user.email}`
    })
-
+    
     }
   catch(error){
     return error
@@ -227,22 +231,53 @@ async finduser (userid:string){
 
 
 
- async resetpassword(userid: string, payload: ResetPasswordto, @Res() res:Response,) {
-
+ async resetpassword(userid: string, payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
+    
    try{
-  const user = await this.userRepo.findOne({where:{userid}})
+      // const [userid] = req.user
+      // let users = req.user
+      // let id = users['userid']
+     const user = await this.userRepo.findOne({where: {userid}})
+     
+     
 
-   
+     console.log(user);
+     
       const pwMatch = await bcrypt.compare(
-         payload.currentPassword,
+         payload.OTP,
          user.password
        );
-       
+       console.log(user.password);
+         
        
        if (!pwMatch) {
-         throw new HttpException("Incorrect password",HttpStatus.BAD_REQUEST);
+         throw new HttpException(" OTP has already been used",HttpStatus.BAD_REQUEST);
        }
-    
+      
+         const currentDateTime = new Date()
+      console.log( 'time sent:', currentDateTime);
+
+      const expirationTime = new Date()
+      expirationTime.setMinutes(expirationTime.getMinutes() + 1); 
+      console.log('expiration time: ', expirationTime)
+
+      const timeOut = setTimeout(() => {
+      const now = new Date();
+      console.log('current time:', now);
+       
+      if (now.getTime() < expirationTime.getTime()) {
+         clearInterval(timeOut);
+         console.log('OTP has expired');
+         
+         // throw new HttpException('OTP has expired', HttpStatus.BAD_REQUEST);
+       } else {
+         console.log('OTP is still valid');
+         user.password = payload.OTP
+         return 'unable to validate OTP'
+       }
+       
+     }, 1000);
+ 
        const {newPassword, confirmPassword} = payload
         if(newPassword !== confirmPassword){
          throw new HttpException('password must be the same',HttpStatus.BAD_REQUEST)
@@ -260,58 +295,24 @@ async finduser (userid:string){
    catch(error){
       
      return res.send(error)
-   }
-   
-   
-  
+   }  
  }
 
 
-
-//  async sendEmailForgotPassword(email: string): Promise<boolean> {
-//    var userFromDb = await this.userRepo.findOne({where:{email}});
-//    if(!userFromDb){ 
-//       throw new HttpException('LOGIN.USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-//  }
-//    var tokenModel = await this.forgotPassword({email});
-
-//    if(tokenModel && tokenModel.message){
-//        let transporter = nodemailer.createTransport({
-//            host: config.mail.host,
-//            port: config.mail.port,
-//            secure: config.mail.secure, // true for 465, false for other ports
-//            auth: {
-//                user: config.mail.user,
-//                pass: config.mail.pass
-//            }
-//        });
+ googleLogin( req){
+   if(!req.user){
+   console.log(req.user);
+      return 'NO user from google'
+   }
    
-//        let mailOptions = {
-//          from: '"Company" <' + config.mail.user + '>', 
-//          to: email, // list of receivers (separated by ,)
-//          subject: 'Frogotten Password', 
-//          text: 'Forgot Password',
-//          html: 'Hi! <br><br> If you requested to reset your password<br><br>'+
-//          '<a href='+ config.host.url + ':' + config.host.port +'/auth/email/reset-password/'+ tokenModel.message + '>Click here</a>'  // html body
-//        };
-   
-//        var sent = await new Promise<boolean>(async function(resolve, reject) {
-//          return await transporter.sendMail(mailOptions, async (error, info) => {
-//              if (error) {      
-//                console.log('Message sent: %s', error);
-//                return reject(false);
-//              }
-//              console.log('Message sent: %s', info.messageId);
-//              resolve(true);
-//          });      
-//        })
+   return{
+      message: 'user info from google',
+      user: req.user
+   }
+  }
+}
 
-//        return sent;
-//    } else {
-//      throw new HttpException('REGISTER.USER_NOT_REGISTERED', HttpStatus.FORBIDDEN);
-//    }
-//  }
-
+  
 
 
 
@@ -381,16 +382,3 @@ async finduser (userid:string){
 
 //   }
 
-
-  googleLogin( req){
-   if(!req.user){
-   console.log(req.user);
-      return 'NO user from google'
-   }
-   
-   return{
-      message: 'user info from google',
-      user: req.user
-   }
-  }
-}
