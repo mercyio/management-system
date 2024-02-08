@@ -6,6 +6,8 @@ export type GoogleDetails = {
 
     picture: string
 
+    // password : string;
+
     // username : string;
 
     // lastname : string;

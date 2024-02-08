@@ -2,7 +2,7 @@ import { UserRole } from "src/Auth/enum/role.enum";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ProfileEntity } from "./profile.entity";
 
-@Entity()
+@Entity('User')
 export class UserEntity{
    @PrimaryGeneratedColumn()
     userid : string;

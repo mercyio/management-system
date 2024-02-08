@@ -21,20 +21,20 @@ async function bootstrap() {
   // app.setGlobalPrefix('api/v1')
  
   // NB: enable sessions
-  app.use(
-    session({
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false,
-      cookie:{
-        maxAge: 600000000,
-      }
-    }),
-  );
+  // app.use(
+  //   session({
+  //     secret: 'my-secret',
+  //     resave: false,
+  //     saveUninitialized: false,
+  //     cookie:{
+  //       maxAge: 600000000,
+  //     }
+  //   }),
+  // );
   
-  // enable passport with session
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // // enable passport with session
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
 
   // NB: swaggar configuration

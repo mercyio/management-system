@@ -12,7 +12,7 @@ import { BlockGuard } from './guard/block.guard';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { ProfileEntity } from './entities/profile.entity';
 import { GoogleEntity } from './entities/google.entity';
-import { SessionSerializer } from './serializer/serializer';
+// import { SessionSerializer } from './serializer/serializer';
 
 @Module({
     imports: [
@@ -35,7 +35,7 @@ import { SessionSerializer } from './serializer/serializer';
         }),
       ],
       controllers: [AuthController],
-      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, SessionSerializer ],
+      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, ],
       exports: [AuthService, JwtStrategy, PassportModule],
     })
 export class AuthModule {}

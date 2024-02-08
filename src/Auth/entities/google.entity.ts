@@ -2,8 +2,9 @@ import { UserRole } from "src/Auth/enum/role.enum";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ProfileEntity } from "./profile.entity";
 import { Url } from "url";
+import { IsOptional } from "class-validator";
 
-@Entity()
+@Entity('Google')
 export class GoogleEntity{
    @PrimaryGeneratedColumn()
     userid : string;
@@ -20,7 +21,8 @@ export class GoogleEntity{
     @Column()
     email : string;
 
-    
+    @Column({default: null})
+    password : string;
 
     // @Column({
     //    type: 'enum',

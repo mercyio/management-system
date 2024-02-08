@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { SignupDto } from "./dto/signup.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -10,6 +10,7 @@ import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiUnauthori
 import { BlockGuard } from "./guard/block.guard";
 import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
+import { GoogleDto } from "./dto/google.dto";
 
 
 @Controller()
@@ -24,6 +25,7 @@ export class AuthController {
       return  user;
     }
     
+
     @Post('login')
     @ApiOkResponse({description: "User Login"})
     @ApiUnauthorizedResponse({description: "Invalid credentials"})
@@ -109,8 +111,6 @@ export class AuthController {
       }else{
         return{msg: 'Not Authenticated'}
       }
-      
-    }
 
 }
-
+}

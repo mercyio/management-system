@@ -15,6 +15,7 @@ import { error, log, profile } from "console";
 import { MailerService } from "@nestjs-modules/mailer";
 import { GoogleEntity } from "./entities/google.entity";
 import { GoogleDetails } from "./userType/type";
+import { GoogleDto } from "./dto/google.dto";
 // import {default as config} from '../config';
 
 @Injectable()
@@ -299,7 +300,6 @@ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Re
    }  
  }
 
-
  googleLogin( req){
    if(!req.user){
    console.log(req.user);
@@ -325,7 +325,6 @@ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Re
   
   }
 }
-
   
 
 
