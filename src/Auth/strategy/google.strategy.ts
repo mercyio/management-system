@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, VerifyCallback } from "passport-google-oauth20";
+import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
+import { AuthService } from "../auth.service";
 
 
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor() {
+  constructor(private authService: AuthService) {
     super({ 
   
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -16,29 +17,46 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
+  // async validate(
+  //   profile: Profile,
+  //   accessToken: string,
+  //   refreshToken: string,
+  //   done: VerifyCallback,
+  // ):Promise<any> {
+    
+    
+  //     const user ={
+  //       email: profile.emails[0].value,
+  //       displayName: profile.displayName,
+  //       // picture: profile.photos[0].value,
+  //     };
+  //    console.log(user);
+     
+  //     done(null, user);
+  //   }
+
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
+    profile: Profile,
     done: VerifyCallback,
   ):Promise<any> {
-    console.log(accessToken);
-    console.log(profile);
-    console.log(refreshToken);
-    
-    
     
     const { name, emails, photos } = profile;
-
-    const user = {
-      email: emails[0].value,
-      firstname: name.firstname,
-      lastname: name.lastname,
-      picture: photos[0].value,
-      accessToken,
-      refreshToken,
-    };
-
-    done(null, user);
-  }
-}
+    
+      const user = await this.authService.validateGoogleUsers({
+        email: emails[0].value,
+        displayName: profile.displayName,
+        // username: profile.username,
+        // firstname: profile.firstname,
+        // lastname: profile.displayName,
+        picture: profile.photos[0].value,
+        accessToken,
+        refreshToken,
+      });
+    //  console.log(user);
+     
+      done(null, user);
+    }
+    }
+    

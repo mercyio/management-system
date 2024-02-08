@@ -1,5 +1,6 @@
 import { UserRole } from "src/Auth/enum/role.enum";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { ProfileEntity } from "./profile.entity";
 
 @Entity()
 export class UserEntity{
@@ -41,4 +42,8 @@ export class UserEntity{
 
    @UpdateDateColumn()
    update_At : Date
+
+   // @OneToOne(() => ProfileEntity, (profile) => profile.user )
+   // @JoinColumn({name: 'user_id'})
+   // profile: ProfileEntity;
 }

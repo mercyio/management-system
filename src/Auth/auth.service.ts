@@ -11,8 +11,10 @@ import { ResetPasswordto } from "./dto/resetpassword.dto";
 import { ForgotPasswordDto } from "./dto/forgotpassword.dto";
 import { ConfigService } from "@nestjs/config";
 import * as nodemailer from 'nodemailer';
-import { error, log } from "console";
+import { error, log, profile } from "console";
 import { MailerService } from "@nestjs-modules/mailer";
+import { GoogleEntity } from "./entities/google.entity";
+import { GoogleDetails } from "./userType/type";
 // import {default as config} from '../config';
 
 @Injectable()
@@ -20,6 +22,8 @@ export class AuthService {
 
   constructor ( 
     @InjectRepository(UserEntity) private userRepo: Repository<UserEntity>,
+
+    @InjectRepository(GoogleEntity) private GoogleRepo: Repository<GoogleEntity>,
     private jwtService :JwtService,
    
     private configService :ConfigService,
@@ -231,16 +235,13 @@ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Re
 
 
 
- async resetpassword(userid: string, payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
+ async resetpassword(payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
     
    try{
-      // const [userid] = req.user
-      // let users = req.user
-      // let id = users['userid']
-     const user = await this.userRepo.findOne({where: {userid}})
+      const users = req.user
+      const id = users['userid']
+     const user = await this.userRepo.findOne({where: {userid: id}})
      
-     
-
      console.log(user);
      
       const pwMatch = await bcrypt.compare(
@@ -309,6 +310,19 @@ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Re
       message: 'user info from google',
       user: req.user
    }
+  }
+
+  async validateGoogleUsers( detail: GoogleDetails){
+   const googleUsers = await this.GoogleRepo.findOne({where:{email: detail.email}})
+   // console.log(googleUsers);
+   
+   if(googleUsers) return googleUsers
+
+   const userdetail = await this.GoogleRepo.create(detail)   
+  const savedatail = await this.GoogleRepo.save(userdetail)
+  console.log(userdetail);
+  return savedatail
+  
   }
 }
 

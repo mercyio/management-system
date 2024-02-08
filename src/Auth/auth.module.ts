@@ -10,10 +10,13 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { RoleGuard } from './guard/role.guard';
 import { BlockGuard } from './guard/block.guard';
 import { GoogleStrategy } from './strategy/google.strategy';
+import { ProfileEntity } from './entities/profile.entity';
+import { GoogleEntity } from './entities/google.entity';
+import { SessionSerializer } from './serializer/serializer';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([UserEntity, ProfileEntity, GoogleEntity]),
            JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) =>
@@ -32,7 +35,7 @@ import { GoogleStrategy } from './strategy/google.strategy';
         }),
       ],
       controllers: [AuthController],
-      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, ],
+      providers: [AuthService, RoleGuard,BlockGuard, JwtStrategy, GoogleStrategy, SessionSerializer ],
       exports: [AuthService, JwtStrategy, PassportModule],
     })
 export class AuthModule {}

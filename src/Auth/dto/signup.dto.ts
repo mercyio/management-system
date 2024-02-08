@@ -4,23 +4,23 @@ import { UserRole } from "src/Auth/enum/role.enum"
 
 
 export class SignupDto {
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @ApiProperty({type: String})
-    firstname: string
+    // @IsNotEmpty()
+    // @IsString()
+    // @MinLength(5)
+    // @ApiProperty({type: String})
+    // firstname: string
 
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5)
-    @ApiProperty({type: String })
-    lastname: string
+    // @IsNotEmpty()
+    // @IsString()
+    // @MinLength(5)
+    // @ApiProperty({type: String })
+    // lastname: string
 
-    @IsNotEmpty()
-    @IsString()
-    @Length(11)
-    @ApiProperty({type: String })
-    phonenumber: string
+    // @IsNotEmpty()
+    // @IsString()
+    // @Length(11)
+    // @ApiProperty({type: String })
+    // phonenumber: string
 
     @IsNotEmpty()
     @IsString()
@@ -33,7 +33,7 @@ export class SignupDto {
     @ApiProperty({type: String})
     password: string
     
-    @IsOptional()
-    @ApiProperty({type: String})
-    role: UserRole
+    // @IsOptional()
+    // @ApiProperty({type: String})
+    // role: UserRole
 }

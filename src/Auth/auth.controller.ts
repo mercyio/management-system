@@ -74,26 +74,43 @@ export class AuthController {
       return await this.authService.finduser(userid)
     }
     
+    @UseGuards(AuthGuard())
     @Roles('user')
     @Post('forgot-password')
     async requestPasswordReset(@Body() payload:ForgotPasswordDto, @Req() req:Request, @Res() res:Response) {
       return await this.authService.forgotPassword( payload,req, res);
     }
     
+    
+    @UseGuards(AuthGuard())
     @Roles('user')
     @Post('reset-password')
-    async resetPassword(@Param('userid') userid:string,  @Body() payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
-      return await this.authService.resetpassword(userid, payload,res, req);
+    async resetPassword(@Body() payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
+      return await this.authService.resetpassword(payload,res, req);
     }
+
 
     @Get()
     @UseGuards(AuthGuard('google'))
      googleAuth(@Req() req){}
 
+
     @Get('auth/google/redirect')
     @UseGuards(AuthGuard('google'))
      googleAuthRedirect(@Req() req){
-    return this.authService.googleLogin(req)
+    return this.authService.validateGoogleUsers(req)
     } 
+
+    @Get('status')
+    async userswithgoogle(@Req() req:Request){
+      console.log(req.user);
+      if(req.user){
+        return {msg: 'Authenticated'}
+      }else{
+        return{msg: 'Not Authenticated'}
+      }
+      
+    }
+
 }
 
