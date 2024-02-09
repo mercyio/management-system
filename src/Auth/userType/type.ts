@@ -12,9 +12,9 @@ export type GoogleDetails = {
 
     // lastname : string;
 
-    accessToken : string;
+    // accessToken : string;
 
-    refreshToken : string;
+    // refreshToken : string;
 
 
 
