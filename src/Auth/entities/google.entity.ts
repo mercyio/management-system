@@ -24,13 +24,17 @@ export class GoogleEntity{
     @Column({default: null})
     password : string;
 
-    // @Column({
-    //    type: 'enum',
-    //    enum: UserRole,
-    //    default: UserRole.unknown
-    // })
-    // role: UserRole;
+   //  @Column({
+   //     type: 'enum',
+   //     enum: UserRole,
+   //     default: UserRole.unknown
+   //  })
+   //  role: UserRole;
 
+    @Column({
+      default: false
+    })
+    blocked: boolean
 
    @CreateDateColumn()
    created_At: Date

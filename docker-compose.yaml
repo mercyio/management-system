@@ -13,7 +13,7 @@ services:
                 max-size: 10m
                 max-file: "3"
     pgadmin:
-        image: dpage/pgadmin4
+        image: dpage/pgadmin4:latest
         environment: 
             - PGADMIN_DEFAULT_EMAIL=mercydanke@gmail.com
             - PGADMIN_DEFAULT_PASSWORD=formula10
