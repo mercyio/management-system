@@ -1,21 +1,50 @@
+# version: '3.7'
+# services:
+#     postgres:
+#         image: postgres:9.6
+#         environment:
+#             - DB_USER=postgres
+#             - DB_PASSWORD=mysecretpassword
+#             - DB_DATABASE=management system
+#         ports: 
+#             - 5432:5432
+#         logging:
+#             options:
+#                 max-size: 10m
+#                 max-file: "3"
+#     pgadmin:
+#         image: dpage/pgadmin4:latest
+#         environment: 
+#             - PGADMIN_DEFAULT_EMAIL=mercydanke@gmail.com
+#             - PGADMIN_DEFAULT_PASSWORD=97LqwBCTPU8a73QKvxyioVAP0RMPeP
+#         ports: 
+#             - "5050:80"
+
 version: '3.7'
+
 services:
-    postgres:
-        image: postgres:9.6
+    postgresql_database:
+        image: postgres:latest
         environment:
             - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=formula10
-            - POSTGRES_DB=management
+            - POSTGRES_PASSWORD=1234567890
+            - POSTGRES_DB=postgres
         ports: 
-            - 5432:5432
-        logging:
-            options:
-                max-size: 10m
-                max-file: "3"
+            - "5432:5432"
+        restart: always
+        volumes: 
+            - database-data:/var/lib/postgresql/data/
+
     pgadmin:
-        image: dpage/pgadmin4:latest
+        image: dpage/pgadmin4
         environment: 
             - PGADMIN_DEFAULT_EMAIL=mercydanke@gmail.com
             - PGADMIN_DEFAULT_PASSWORD=formula10
-        ports: 
-            - "5050:80"
+        ports:
+            - '5050:80'
+        restart: always
+        volumes: 
+            - pgadmin:/root/.pgadmin
+volumes:
+    database-data:
+    pgadmin:

@@ -14,7 +14,7 @@ export const dataSourceOptions: DataSourceOptions = ({
               password: configService.getOrThrow('DB_PASSWORD'),
               database: configService.getOrThrow('DB_DATABASE'),
               entities: ['dist/**/*.entity.js'],
-              migrations: ['dist/database/migrations/*.js']
+              migrations: ['dist/config/migrations/*.js']
           
 })
 
