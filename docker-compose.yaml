@@ -26,11 +26,11 @@ services:
     postgresql_database:
         image: postgres:latest
         environment:
-            - POSTGRES_USER=umfyihoryjwhwvilycf6
-            - POSTGRES_PASSWORD=NDsdD2SPfE5FICaJim45hOCiJWJJeO
-            - POSTGRES_DB=bxsn6wsimah8m6l7o11i
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=1234567890
+            - POSTGRES_DB=postgres
         ports: 
-            - "50013:50013"
+            - "5432:5432"
         restart: always
         volumes: 
             - database-data:/var/lib/postgresql/data/
