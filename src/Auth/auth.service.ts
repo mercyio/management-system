@@ -144,17 +144,14 @@ async findUsers(){
   async blockUser( userid:string){
    try{
    const user =await this.userRepo.findOne({where:{userid}})
-   const googleUsers = await this.GoogleRepo.findOne({where:{userid}})
-      if(!user && !googleUsers){
-         throw new UnauthorizedException('incorrect credentials')
-      }
+
       user.blocked = true
-      await this.userRepo.save(user)
+     const block=  await this.userRepo.save(user)
 
-      googleUsers.blocked = true
-      await this.GoogleRepo.save(googleUsers)
-
-       return 'successfully blocked';
+       return {
+         msg: 'successful',
+         block
+       };
    }
    catch(error){
       throw new UnauthorizedException('unable to block this user')
