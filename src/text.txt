@@ -2,7 +2,7 @@ docker login
 docker pull postgres
 docker run -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 or
-docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
 docker-compose config
 docker-compose up --build
 docker pc
@@ -24,3 +24,5 @@ npm i dotenv
 
 
     npm run migration:generate -- config/migrations/testingFiles
+
+    nest generate resource user
