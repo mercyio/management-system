@@ -1,20 +1,20 @@
 import { UserRole } from "src/Auth/enum/role.enum";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ProfileEntity } from "./profile.entity";
+import { ProfileEntity } from "./dashboard.entity";
 
 @Entity('User')
 export class UserEntity{
    @PrimaryGeneratedColumn()
     userid : string;
 
-    @Column()
-    firstname : string;
+   //  @Column()
+   //  firstname : string;
 
-    @Column()
-    lastname : string;
+   //  @Column()
+   //  lastname : string;
 
-    @Column()
-    phonenumber : string;
+   //  @Column()
+   //  phonenumber : string;
 
     @Column()
     email : string;
@@ -34,8 +34,8 @@ export class UserEntity{
     })
     blocked: boolean
 
-    @Column({ name: "is_active", default: false })
-    isActive: boolean;
+   //  @Column({ name: "is_active", default: false })
+   //  isActive: boolean;
 
    @CreateDateColumn()
    created_At: Date
@@ -43,7 +43,6 @@ export class UserEntity{
    @UpdateDateColumn()
    update_At : Date
 
-   // @OneToOne(() => ProfileEntity, (profile) => profile.user )
-   // @JoinColumn({name: 'user_id'})
-   // profile: ProfileEntity;
+   @OneToOne(() => ProfileEntity, (profile) => profile.user )
+   profile: ProfileEntity;
 }

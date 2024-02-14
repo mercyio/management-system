@@ -102,7 +102,7 @@ async findEmail(email:string){
 }
 
 
-
+// TO VERIFY USERS TOKEN 
 async user(headers:any) :Promise<any>{
    const authorizationHeader = headers.authorization;
 
@@ -115,10 +115,11 @@ async user(headers:any) :Promise<any>{
          let userid = decoded["userid"];
          let user = await this.userRepo.findOneBy({userid});
          return{
-            userid,
-            name:user.firstname, 
-            email: user.email, 
-            role:user.role
+            // userid,
+            // name:user.firstname, 
+            // email: user.email, 
+            // role:user.role
+            user: user.profile
          };
       } 
       catch(error){
@@ -221,7 +222,7 @@ async forgotPassword(payload:ForgotPasswordDto ,@Req() req:Request,@Res() res:Re
         from: 'mercydanke10@gmail.com',
         to:`${user.email}`,
         subject: "Management system",
-        html: `<b>hey ${user.lastname} this is your reset Password OTP ${OTP}. Do not disclose</b>`,
+        html: `<b>Dear ${user.email} this is your reset Password OTP ${OTP}. Do not disclose</b>`,
         text: 'here is your new password'
   
       });

@@ -1,6 +1,6 @@
 import { UserRole } from "src/Auth/enum/role.enum";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ProfileEntity } from "./profile.entity";
+import { ProfileEntity } from "./dashboard.entity";
 import { Url } from "url";
 import { IsOptional } from "class-validator";
 
@@ -31,16 +31,15 @@ export class GoogleEntity{
    //  })
    //  role: UserRole;
 
-    @Column({
-      default: false
-    })
-    blocked: boolean
+    // @Column({
+    //   default: false
+    // })
+    // blocked: boolean
 
    @CreateDateColumn()
    created_At: Date
 
    @UpdateDateColumn()
    update_At : Date
-
-  
+ 
 }

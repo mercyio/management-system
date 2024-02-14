@@ -10,7 +10,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { RoleGuard } from './guard/role.guard';
 import { BlockGuard } from './guard/block.guard';
 import { GoogleStrategy } from './strategy/google.strategy';
-import { ProfileEntity } from './entities/profile.entity';
+import { ProfileEntity } from './entities/dashboard.entity';
 import { GoogleEntity } from './entities/google.entity';
 // import { SessionSerializer } from './serializer/serializer';
 
