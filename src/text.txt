@@ -1,3 +1,6 @@
+API url :  https://management-system-viy5.onrender.com
+
+
 docker login
 docker pull postgres
 docker run -e POSTGRES_PASSWORD=postgres -d postgres
