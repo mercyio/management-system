@@ -8,17 +8,35 @@ or
 docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
 docker-compose config
 docker-compose up --build
-docker pc
+docker ps
 docker inpect 
+
+
+docker build -t nestjs-docker .
+docker run -p 7000:7000 nestjs-docker
+or for production
+docker build -t nestjs-prod -f Dockerfile.prod .
+docker run -p 7000:7000 nestjs-prod
+then
+docker-compose up --build
+To targrt a particular docker-compose file:
+docker-compose.prod.yml up --build
+docker-compose -f docker-compose.yml up --build -d
 
 
 
 "IPAddress": "172.19.0.3",
-clever cloudb
+clever cloud
 
 npm install @nestjs/typeorm typeorm mysql2
 npm i dotenv
 
+ docker run (image name) 
+ docker run -e POSTGRES_PASSWORD=password d957f100ceec
+
+  You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
+  connections without a password. This is *not* recommended.
+  docker run -e POSTGRES_HOST_AUTH_METHOD=trust d957f100ceec
 
 
 

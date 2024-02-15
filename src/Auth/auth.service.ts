@@ -2,7 +2,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, Logger, Not
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SignupDto } from "./dto/signup.dto";
-import { UserEntity } from "./entities/userEntity";
+import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
@@ -115,11 +115,11 @@ async user(headers:any) :Promise<any>{
          let userid = decoded["userid"];
          let user = await this.userRepo.findOneBy({userid});
          return{
-            // userid,
-            // name:user.firstname, 
-            // email: user.email, 
-            // role:user.role
-            user: user.profile
+            userid,
+            name:user.firstname, 
+            email: user.email, 
+            role:user.role,
+            // profile: user.profile
          };
       } 
       catch(error){

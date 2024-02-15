@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserEntity } from "./userEntity";
+import { UserEntity } from "./user.entity";
 import { UserRole } from "../enum/role.enum";
 @Entity('Dashboard')
 export class ProfileEntity{
@@ -38,7 +38,7 @@ role:UserRole
     createdAt: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date
+    UpdatedAt: Date
 
 
  

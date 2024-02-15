@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  nestjs_api_prod:
+    # image: nestjs-docker
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+     - PORT=7000
+     - NODE_ENV: production
+# mapping from the host port to the container port
+    ports:
+      - 7000:7000  
+    volumes:
+      - ./src/usr/src/app/src

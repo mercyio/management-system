@@ -7,14 +7,14 @@ export class UserEntity{
    @PrimaryGeneratedColumn()
     userid : string;
 
-   //  @Column()
-   //  firstname : string;
+    @Column()
+    firstname : string;
 
-   //  @Column()
-   //  lastname : string;
+    @Column()
+    lastname : string;
 
-   //  @Column()
-   //  phonenumber : string;
+    @Column()
+    phonenumber : string;
 
     @Column()
     email : string;
