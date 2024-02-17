@@ -34,8 +34,9 @@ export class AuthController {
       const token = await this.authService.signin(payload, req, res);
     }
 
-    @HttpCode(200) 
+
     @Post('logout')
+    @HttpCode(200) 
     async logout (@Req()req:Request, @Res()res:Response){
       return await this.authService.logout(req, res)
     }
@@ -55,17 +56,17 @@ export class AuthController {
       return req.user
     }
     
-    @UseGuards(BlockGuard)
-    @Roles('admin', 'vendors')
     @Post('block/:userid')
+    @UseGuards(AuthGuard(), RoleGuard, BlockGuard)
+    @Roles('admin', 'vendors')
     async blockuser(@Param('userid') userid:string){
       return await this.authService.blockUser(userid)
     }
     
-    @HttpCode(200)
-    @UseGuards(BlockGuard)
-    @Roles('admin', 'vendors')
     @Post('unblock/:userid')
+    @HttpCode(200)
+    @UseGuards(AuthGuard(), RoleGuard, BlockGuard)
+    @Roles('admin', 'vendors')
     async unblockuser(@Param('userid') userid: string){
       return await this.authService.unblock(userid)
     }
@@ -76,16 +77,16 @@ export class AuthController {
       return await this.authService.finduser(userid)
     }
     
-    @UseGuards(AuthGuard())
-    @Roles('user')
+    @UseGuards(AuthGuard(), BlockGuard)
+    // @Roles('user')
     @Post('forgot-password')
     async requestPasswordReset(@Body() payload:ForgotPasswordDto, @Req() req:Request, @Res() res:Response) {
       return await this.authService.forgotPassword( payload,req, res);
     }
     
     
-    @UseGuards(AuthGuard())
-    @Roles('user')
+    @UseGuards(AuthGuard(), BlockGuard)
+    // @Roles('user')
     @Post('reset-password')
     async resetPassword(@Body() payload: ResetPasswordto, @Res() res:Response, @Req() req:Request) {
       return await this.authService.resetpassword(payload,res, req);
@@ -99,11 +100,13 @@ export class AuthController {
 
     @Get('auth/google/redirect')
     @UseGuards(AuthGuard('google'))
+    @UseGuards(AuthGuard('google'), )
      googleAuthRedirect(@Req() req){
     return this.authService.validateGoogleUsers(req)
     } 
 
     @Get('status')
+    // @UseGuards(BlockGuard)
     async userswithgoogle(@Req() req:Request){
       console.log(req.user);
       if(req.user){

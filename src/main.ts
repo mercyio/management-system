@@ -56,7 +56,10 @@ async function bootstrap() {
 
   // calling listening port from .env
   const Port = process.env.LISTENING_PORT || 7000
-  await app.listen(Port, ()=> console.log(`Running API in NODE: ${process.env.NODE_ENV} and listening on port:${Port}`));
+  // const Port = process.env.PORT || 7000
+  await app.listen(Port, ()=> console.log(`listening on port:${Port}`));
+   
+  // await app.listen(Port, ()=> console.log(`Running API in NODE: ${process.env.NODE_ENV} and listening on port:${Port}`));
 }
 bootstrap();
 

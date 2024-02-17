@@ -6,25 +6,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-     - PORT=7000
-     - NODE_ENV: development
-# mapping from the host port to the container port
+      # mapping from the host port to the container port
     ports:
-      - 7000:7000  
+      - "7000:7000 " 
+    environment:
+     - PORT: 7000
+     - NODE_ENV: development
     volumes:
       - ./src/usr/src/app/src
 
   postgres_db:
      image: postgres
-     ports:
-       - '5432:5432'
+     ports:  
+       - "5432:5432"
      environment:
-       - POSTGRES_ROOT_PASSWORD=postgres
-       - POSTGRES_DATABASE=postgres
+      #  - POSTGRES_ROOT_PASSWORD=postgres
+       - POSTGRES_DB=postgres
        - POSTGRES_USER=postgres
        - POSTGRES_PASSWORD=postgres
-       - POSTGRES_TCP_PORT=5432
+      #  - POSTGRES_TCP_PORT=5432
 
 # version: "3.9"
 

@@ -7,10 +7,21 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     environment:
-     - PORT=7000
+     - PORT: 7000
      - NODE_ENV: production
-# mapping from the host port to the container port
+    # mapping from the host port to the container port
     ports:
-      - 7000:7000  
+      - "7000:7000"  
     volumes:
       - ./src/usr/src/app/src
+
+postgres_db:
+     image: postgres:10.4
+     ports:  
+       - "5432:5432"
+     environment:
+      #  - POSTGRES_ROOT_PASSWORD=postgres
+       - POSTGRES_DB=postgres
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=postgres
+      #  - POSTGRES_TCP_PORT=5432

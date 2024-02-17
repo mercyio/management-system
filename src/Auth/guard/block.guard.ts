@@ -17,7 +17,7 @@ export class BlockGuard implements CanActivate{
     //  console.log(user)
 
      if( user && user.blocked){
-       throw new UnauthorizedException(`blocked user`)
+       throw new UnauthorizedException(`Your account has been blocked`)
      }
       return true;
    }  

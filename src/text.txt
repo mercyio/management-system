@@ -12,7 +12,7 @@ docker ps
 docker inpect 
 
 
-docker build -t nestjs-docker .
+docker build -t nestjs-docker . 
 docker run -p 7000:7000 nestjs-docker
 or for production
 docker build -t nestjs-prod -f Dockerfile.prod .
