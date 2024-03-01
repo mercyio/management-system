@@ -25,7 +25,8 @@ import { GoogleEntity } from './entities/google.entity';
                 ('JWT_SECRET'), 
                 signOptions:{
                     algorithm: configService.getOrThrow
-                    ('JWT_ALGORITHM')
+                    ('JWT_ALGORITHM'),
+                    expiresIn : configService.getOrThrow('JWT_EXPIRESIN')
                 }
             }),
             inject: [ConfigService],
