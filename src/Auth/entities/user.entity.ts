@@ -4,7 +4,7 @@ import { ProfileEntity } from "./dashboard.entity";
 
 @Entity('User')
 export class UserEntity{
-   @PrimaryGeneratedColumn()
+   @PrimaryGeneratedColumn('uuid')
     userid : string;
 
     @Column()
