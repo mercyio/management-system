@@ -46,7 +46,7 @@ export class AuthController {
     @ApiBearerAuth()
     // @UseGuards(AuthGuard(), RoleGuard)
     // @Roles('admin', 'vendor')
-    async findUsers(){
+    async getAllUsers(){
       return await this.authService.findUsers()
     }
 
