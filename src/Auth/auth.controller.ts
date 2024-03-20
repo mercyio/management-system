@@ -71,7 +71,7 @@ export class AuthController {
       return await this.authService.unblock(userid)
     }
     
-    @UseGuards(AuthGuard(),BlockGuard)
+    // @UseGuards(AuthGuard(),BlockGuard)
     @Get('user/:userid')
     async user(@Param('userid') userid:string){
       return await this.authService.finduser(userid)
